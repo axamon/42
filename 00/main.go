@@ -9,9 +9,17 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/howeyc/gopass"
 )
 
 func main() {
+
+	silent, _ := gopass.GetPasswd()
+
+	if string(silent) != "Meriadoc" {
+		os.Exit(1)
+	}
+
 	red := color.New(color.FgRed).SprintFunc()
 	green := color.New(color.FgGreen).SprintFunc()
 	ok, err := ex00()
