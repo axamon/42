@@ -1,3 +1,4 @@
 *.out
 main.c
 *.swp
+Makefile
