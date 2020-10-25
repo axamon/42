@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -22,13 +23,12 @@ func ex02() (bool, error) {
 
 	dir := "ex02"
 	// rimuove file untarred quando ha finito.
-	defer os.Remove(dir + "/" + "test0")
-	defer os.Remove(dir + "/" + "test1")
-	defer os.Remove(dir + "/" + "test2")
-	defer os.Remove(dir + "/" + "test3")
-	defer os.Remove(dir + "/" + "test4")
-	defer os.Remove(dir + "/" + "test5")
-	defer os.Remove(dir + "/" + "test6")
+	defer func() {
+		var files = []string{"test0", "test1", "test2", "test3", "test4", "test5", "test6"}
+		for _, f := range files {
+			os.Remove(dir + "/" + f)
+		}
+	}()
 
 	file := "exo2.tar"
 	_, err := controllofile(1, file, dir)
@@ -51,6 +51,16 @@ func ex02() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
+	defer func() {
+		// mostra nuovamente il file tar
+		mostraTar := exec.Command("bash", "-c", "mv .exo2.tar exo2.tar")
+		mostraTar.Dir = dir
+		_, err = mostraTar.Output()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	lsCMD := exec.Command("bash", "-c", "ls -l")
 	lsCMD.Dir = dir
@@ -113,34 +123,32 @@ lrwxr-xr-x 1 XX XX 5 Jun 1 22:20 test6 -> test0`
 		}
 		switch {
 		case risultatoAtteso[i].nome != risultato[i].nome:
-			fmt.Printf("nome non corretto in riga %d %s %s\n", i, risultatoAtteso[i].nome, risultato[i].nome)
+			err = fmt.Errorf("nome non corretto in riga %d %s %s", i, risultatoAtteso[i].nome, risultato[i].nome)
+			goto ERRORE
 		case strings.TrimSpace(risultatoAtteso[i].kb) != strings.TrimSpace(risultato[i].kb):
-			fmt.Printf("kb non corretti in riga %d %s %s\n", i, risultatoAtteso[i].kb, risultato[i].kb)
-
+			err = fmt.Errorf("kb non corretti in riga %d %s %s", i, risultatoAtteso[i].kb, risultato[i].kb)
+			goto ERRORE
 		case risultatoAtteso[i].inode != risultato[i].inode:
-			fmt.Println("inode non corretti")
+			err = fmt.Errorf("inode non corretti")
+			goto ERRORE
 		case risultatoAtteso[i].mese != risultato[i].mese:
-			fmt.Printf("mese non corretto in riga %d %s %s\n", i, risultatoAtteso[i].mese, risultato[i].mese)
+			err = fmt.Errorf("mese non corretto in riga %d %s %s", i, risultatoAtteso[i].mese, risultato[i].mese)
+			goto ERRORE
 		case risultatoAtteso[i].orario != risultato[i].orario:
 			fmt.Println("orario non corretto")
+			goto ERRORE
 		case risultatoAtteso[i].giorno != risultato[i].giorno:
-			fmt.Println("giorno non corretto")
-
+			err = fmt.Errorf("giorno non corretto")
+			goto ERRORE
 		case strings.TrimSpace(risultatoAtteso[i].permessi) != strings.TrimSpace(risultato[i].permessi):
-			fmt.Printf("permessi non corretti in riga %d %s %s\n", i, risultatoAtteso[i].permessi, risultato[i].permessi)
-
+			err = fmt.Errorf("permessi non corretti in riga %d %s %s", i, risultatoAtteso[i].permessi, risultato[i].permessi)
+			goto ERRORE
 		default:
 		}
 
 	}
 
-	// mostra nuovamente il file tar
-	mostraTar := exec.Command("bash", "-c", "mv .exo2.tar exo2.tar")
-	mostraTar.Dir = dir
-	_, err = mostraTar.Output()
-	if err != nil {
-		return false, err
-	}
-
 	return true, nil
+ERRORE:
+	return false, err
 }

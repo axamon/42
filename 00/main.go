@@ -57,7 +57,14 @@ func controllofile(numfiles int, file, dir string) (string, error) {
 
 	files, err := ioutil.ReadDir(dir)
 	if len(files) > numfiles {
-		return "", fmt.Errorf("troppi file nella directory %s", dir)
+		var listfiles []string
+		for _, f := range files {
+			if f.Name() == file {
+				continue
+			}
+			listfiles = append(listfiles, f.Name())
+		}
+		return "", fmt.Errorf("troppi file nella directory %s: %s", dir, listfiles)
 	}
 
 	return "ok", nil
