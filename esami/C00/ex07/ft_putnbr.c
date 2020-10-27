@@ -6,7 +6,7 @@
 /*   By: abreglia <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 11:04:18 by abreglia          #+#    #+#             */
-/*   Updated: 2020/10/27 12:01:19 by abreglia         ###   ########.fr       */
+/*   Updated: 2020/10/27 12:04:41 by abreglia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	write_num(char arr[], int size)
 {
 	char a;
 
-	size--;
+	size--; /* needed to remove char in tail */
 	while(size >= 0)
 	{
 		a = arr[size];
