@@ -29,15 +29,23 @@ func main() {
 	// 	os.Exit(1)
 	// }
 
-	check(ex00())
-	check(ex01())
-	check(ex02())
-	check(ex03())
-	check(ex04())
-	check(ex05())
-	check(ex06())
-	check(ex07())
-	check(ex08())
+	type exam func() (string, error)
+
+	var exams = []exam{
+		ex00,
+		ex01,
+		ex02,
+		ex03,
+		ex04,
+		ex05,
+		ex06,
+		ex07,
+		ex08,
+	}
+
+	for _, e := range exams {
+		check(e())
+	}
 }
 
 func check(name string, err error) {
